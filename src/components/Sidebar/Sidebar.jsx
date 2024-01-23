@@ -4,15 +4,16 @@ import { useSelector } from "react-redux";
 
 import styles from "../../styles/Sidebar.module.css";
 
-const Sidebar = () => {
+const Sidebar = ({ amount }) => {
   const { list } = useSelector(({ categories }) => categories);
+  const filtersCategories = list.filter((_, i) => i < amount);
 
   return (
     <section className={styles.sidebar}>
       <div className={styles.title}>CATEGORIES</div>
       <nav>
         <ul className={styles.menu}>
-          {list.map(({ id, name }) => (
+          {filtersCategories.map(({ id, name }) => (
             <li>
               <NavLink
                 className={({ isActive }) =>

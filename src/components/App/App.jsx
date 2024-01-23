@@ -21,7 +21,7 @@ const App = () => {
     <div className="app">
       <Header />
       <div className="container">
-        <Sidebar />
+        <Sidebar amount={7} />
         <AppRoutes />
       </div>
       <Footer />
