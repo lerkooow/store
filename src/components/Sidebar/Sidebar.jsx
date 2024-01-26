@@ -14,7 +14,7 @@ const Sidebar = ({ amount }) => {
       <nav>
         <ul className={styles.menu}>
           {filtersCategories.map(({ id, name }) => (
-            <li>
+            <li key={id}>
               <NavLink
                 className={({ isActive }) =>
                   `${styles.link} ${isActive ? styles.active : ""}`
