@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { ROUTES } from "../../utils/routes";
 import { toggleForm } from "../../features/user/userSlice";
+import { useGetProductsQuery } from "../../features/api/apiSlice";
 
 import styles from "../../styles/Header.module.css";
 
@@ -14,12 +15,15 @@ function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [searchValue, setSearchValue] = useState("");
   const { currentUser } = useSelector(({ user }) => user);
 
   const [values, setValues] = useState({
     name: "Guest",
     avatar: AVATAR,
   });
+
+  const { data, isLoading } = useGetProductsQuery({ title: searchValue });
 
   useEffect(() => {
     if (!currentUser) return;
@@ -30,6 +34,10 @@ function Header() {
   const handleClick = () => {
     if (!currentUser) dispatch(toggleForm(true));
     else navigate(ROUTES.PROFILE);
+  };
+
+  const handleSearch = ({ target: { value } }) => {
+    setSearchValue(value);
   };
 
   return (
@@ -67,14 +75,37 @@ function Header() {
               name="search"
               placeholder="Search for anything..."
               autoComplete="off"
-              onChange={() => {}}
-              value=""
+              onChange={handleSearch}
+              value={searchValue}
             ></input>
             {/* Атрибут autoComplete включает/отключает автозаполнение поля. 
             Если автозаполнение включено, то браузер будет автоматически заполнять поля формы, 
             основываясь на значениях, ранее введенных пользователем. */}
           </div>
-          {false && <div className={styles.box}></div>}
+          {searchValue && (
+            <div className={styles.box}>
+              {isLoading
+                ? "Loading..."
+                : !data.length
+                ? "No results"
+                : data.map(({ title, images, id }) => {
+                    return (
+                      <Link
+                        key={id}
+                        onClick={() => setSearchValue("")}
+                        className={styles.item}
+                        to={`/products/${id}`}
+                      >
+                        <div
+                          className={styles.image}
+                          style={{ backgroundImage: `url(${images[0]})` }}
+                        />
+                        <div className={styles.title}>{title}</div>
+                      </Link>
+                    );
+                  })}
+            </div>
+          )}
         </form>
         <div className={styles.account}>
           <Link to={ROUTES.HOME} className={styles.favourites}>
